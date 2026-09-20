@@ -1,0 +1,54 @@
+id: bucket-internal-to-internal-excessive-denied
+
+name: Internal-to-Internal Excessive Denied Connection
+platform: logsign
+object_type: statistical_bucket
+
+status: production
+
+definition:
+  description: >
+    Identifies internal source IP addresses generating an excessive
+    number of denied connections toward internal destinations.
+  type: statistical
+  group: behavior
+  severity: warning
+  
+
+
+data:
+  query: >
+    @@DeniedConnection
+    AND Source.Position:in
+    AND Destination.Position:in
+
+  time_column: Time.Generated
+
+  group_column: Source.IP
+  value_column: Source.IP
+  criteria: value_count
+
+  trigger:
+    operator: ">"
+    level: 50
+
+  check_events_in_last: 360
+  update_period: 60
+  purge_period: 360
+
+detection_hypothesis: >
+  An internal host generating an unusually high number of denied
+  connections toward other internal systems may indicate scanning,
+  failed lateral activity, or abnormal host behavior.
+
+false_positives:
+  - vulnerability scanners
+  - misconfigured applications
+  - monitoring systems
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null
