@@ -1,8 +1,11 @@
 id: bucket-internal-to-internal-excessive-denied
-
 name: Internal-to-Internal Excessive Denied Connection
 platform: logsign
 object_type: statistical_bucket
+
+author: SOC
+date: 2026-09-20
+modified: 2026-09-20
 
 status: production
 
@@ -32,9 +35,9 @@ data:
     operator: ">"
     level: 50
 
-  check_events_in_last: 360
-  update_period: 60
-  purge_period: 360
+  check_events_in_last_seconds: 360
+  update_period_seconds: 60
+  purge_period_seconds: 360
 
 detection_hypothesis: >
   An internal host generating an unusually high number of denied
