@@ -1,0 +1,61 @@
+id: alert-external-tcp-flood-attack-detected
+
+name: External TCP Flood Attack Detected
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: External TCP Flood Attack Detected
+  category: d/dos
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-tcp-flood-connections-dos
+
+conditions:
+  - field: Source.IP
+    operator: BEHAVIOR
+    value: TCP Flood Connections DOS
+
+  - field: Source.Position
+    operator: IS
+    value: out
+
+  - field: Destination.Position
+    operator: IS
+    value: in
+
+suppression:
+  duration_seconds: 300
+  columns:
+    - Source.IP
+
+run: always
+
+action:
+  column: Source.IP
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+mitre:
+  - id: T1498
+    name: Network Denial of Service
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

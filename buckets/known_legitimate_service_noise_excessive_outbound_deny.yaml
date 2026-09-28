@@ -1,0 +1,56 @@
+id: bucket-known-legitimate-service-noise-excessive-outbound-deny
+name: Known Legitimate Service Noise - Excessive Outbound Deny
+platform: logsign
+object_type: static_bucket
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: production
+
+definition:
+  description: >
+    Contains service names validated as recurring legitimate noise
+    in the Internal-to-External Excessive Denied Connection detection.
+    Entries in this bucket are excluded from contributing to the
+    excessive outbound denied connection threshold.
+  type: static
+  group: behavior
+  severity: information
+
+data:
+  match_type: static_key
+  key: Service.Name
+
+  values:
+    - Google-Gmail
+    - Microsoft-Teams.Published.Worldwide.Allow
+    - Microsoft-Azure.OneDsCollector
+    - MicrosoftOffice365.Published
+    - Apple-AppStore
+    - Anthropic-Claude
+usage:
+  detection:
+    - Internal-to-External Excessive Denied Connection
+
+  condition: >
+    Service.Name NOT BEHAVIOR
+    "Known Legitimate Service Noise - Excessive Outbound Deny"
+
+  purpose: >
+    Reduce recurring benign application noise before denied outbound
+    connections are counted by the statistical bucket.
+
+tuning_notes:
+  - Add a service only after validating that it causes recurring legitimate noise.
+  - Do not treat membership in this bucket as proof that all traffic for the service is benign.
+  - Avoid adding broad cloud, CDN, or hosting service classifications without additional validation.
+  - Review entries periodically as network usage and security policy change.
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

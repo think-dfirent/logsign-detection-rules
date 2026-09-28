@@ -1,0 +1,47 @@
+id: bucket-tcp-flood-connections-dos
+name: TCP Flood Connections DOS
+platform: logsign
+object_type: statistical_bucket
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: TCP Flood Connections DOS
+  type: statistical
+  group: behavior
+  severity: warning
+  context: suspicious
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  query: >
+    @@Connection @@TCPConnection AND(Event.Action:deny OR
+    Event.Action:server-rst OR Event.Action:blocked OR
+    Event.Action:timeout)
+
+  time_column: Time.Generated
+  group_column: Source.IP
+  value_column: Source.IP
+  criteria: value_count
+
+  trigger:
+    operator: ">"
+    level: 3000
+
+  check_events_in_last_seconds: 180
+  update_period_seconds: 60
+  purge_period_seconds: 180
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: >
+    Transcribed from the supplied TCP Flood Connections DOS bucket screenshots.
+    Runtime behavior has not been validated in Logsign.

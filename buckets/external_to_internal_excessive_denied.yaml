@@ -1,0 +1,44 @@
+id: bucket-external-to-internal-excessive-denied
+name: External-to-Internal Excessive Denied Connection
+platform: logsign
+object_type: statistical_bucket
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: External-to-Internal Excessive Denied Connection
+  type: statistical
+  group: behavior
+  severity: warning
+  context: suspicious
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  query: >
+    @@DeniedConnection AND Source.Position:out AND
+    Destination.Position:in
+
+  time_column: Time.Generated
+  group_column: Source.IP
+  value_column: Source.IP
+  criteria: value_count
+
+  trigger:
+    operator: ">"
+    level: 1000
+
+  check_events_in_last_seconds: 360
+  update_period_seconds: 60
+  purge_period_seconds: 360
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

@@ -1,0 +1,63 @@
+id: alert-excessive-denied-connection-to-unique-sources
+
+name: Excessive Denied Connection to Unique Sources
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: disabled
+
+definition:
+  description: Excessive Denied Connection to Unique Sources
+  category: traffic
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-hosts-which-excessive-connection-denied-to-unique-destinations
+
+conditions:
+  - field: DataType
+    operator: IS
+    value: bucket
+
+  - field: EventMap.SubType
+    operator: IS
+    value: Set
+
+  - field: Bucket.Name
+    operator: IS
+    value: Hosts which Excessive Connection Denied to Unique Destinations
+
+suppression:
+  duration_seconds: 360
+  columns:
+    - Action.Object
+
+# Intentionally disabled by the owner using this restricted Logsign schedule.
+# Preserve the configured window as a record, not as the intended operating time.
+run: custom
+schedule:
+  - day: sunday
+    start_time: "02:00"
+    end_time: "02:01"
+
+action:
+  column: Action.Object
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

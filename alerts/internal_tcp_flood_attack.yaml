@@ -1,0 +1,50 @@
+id: alert-internal-tcp-flood-attack
+
+name: Internal TCP Flood Attack
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: Internal TCP Flood Attack
+  category: d/dos
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-tcp-flood-connections-dos
+
+conditions:
+  - field: Source.IP
+    operator: BEHAVIOR
+    value: TCP Flood Connections DOS
+
+  - field: Source.Position
+    operator: IS
+    value: in
+
+suppression:
+  duration_seconds: 300
+  columns:
+    - Source.IP
+
+run: always
+
+# Action and notification settings are not visible in the supplied screenshots.
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: >
+    Transcribed from the supplied Internal TCP Flood Attack alert screenshots.
+    Action and notification settings, including managed security, are not shown
+    and must be confirmed before production use. Runtime behavior has not been
+    validated in Logsign.

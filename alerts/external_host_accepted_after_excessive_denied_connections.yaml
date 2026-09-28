@@ -1,0 +1,66 @@
+id: alert-external-host-accepted-after-excessive-denied-connections
+
+name: External Host Accepted After Excessive Denied Connections
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: External Host Accepted After Excessive Denied Connections
+  category: traffic
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-external-to-internal-excessive-denied
+
+conditions:
+  - field: Source.Position
+    operator: IS
+    value: out
+
+  - field: Destination.Position
+    operator: IS
+    value: in
+
+  - field: Event.Action
+    operator: IS
+    value: Accept
+
+  - field: Source.IP
+    operator: BEHAVIOR
+    value: External-to-Internal Excessive Denied Connection
+
+  - field: EventMap.Type
+    operator: IS
+    value: Session
+
+suppression:
+  duration_seconds: 360
+  columns:
+    - Destination.IP
+    - Source.IP
+
+run: always
+
+action:
+  column: Source.IP
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

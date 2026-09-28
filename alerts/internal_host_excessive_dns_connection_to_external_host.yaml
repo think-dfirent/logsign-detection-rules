@@ -1,0 +1,71 @@
+id: alert-internal-host-excessive-dns-connection-to-external-host
+
+name: Internal Host Excessive DNS Connection to External Host
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: Internal Host Excessive DNS Connection to External Host
+  category: traffic
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-hosts-which-excessive-dns-connections-to-external-host
+  - bucket-internal-host-high-external-dns-bytes-sent
+
+conditions:
+  - field: Source.IP
+    operator: BEHAVIOR
+    value: Hosts which Excessive DNS Connections to External Host
+
+  - field: Source.IP
+    operator: BEHAVIOR
+    value: Internal Host High External DNS Bytes Sent
+
+  - field: Source.Position
+    operator: IS
+    value: in
+
+  - field: Destination.Position
+    operator: IS
+    value: out
+
+  - field: Destination.IP
+    operator: NOTVALUES
+    value:
+      - 8.8.8.8
+      - 1.1.1.1
+      - 8.8.4.4
+      - 1.0.0.1
+      - 9.9.9.9
+
+suppression:
+  duration_seconds: 600
+  columns:
+    - Action.Object
+
+run: always
+
+action:
+  column: Action.Object
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

@@ -1,0 +1,43 @@
+id: bucket-internal-host-high-external-dns-bytes-sent
+name: Internal Host High External DNS Bytes Sent
+platform: logsign
+object_type: statistical_bucket
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: Internal Host High External DNS Bytes Sent
+  type: statistical
+  group: behavior
+  severity: warning
+  context: suspicious
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  query: >
+    @@Connection @@DNSConnection Destination.Position:out
+
+  time_column: Time.Generated
+  group_column: Source.IP
+  value_column: Bytes.Sent
+  criteria: value_sum
+
+  trigger:
+    operator: ">"
+    level: 50000
+
+  check_events_in_last_seconds: 360
+  update_period_seconds: 60
+  purge_period_seconds: 360
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

@@ -1,0 +1,45 @@
+id: alert-internal-host-login-successful
+
+name: Internal Host Login Successful
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: Internal Host Login Successful
+  category: identity
+  severity: information
+  roles:
+    - CMC_Monitor_Role
+
+depends_on: []
+
+conditions: []
+
+suppression:
+  duration_seconds: 600
+  columns:
+    - Source.IP
+
+run: always
+
+action:
+  column: Source.IP
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

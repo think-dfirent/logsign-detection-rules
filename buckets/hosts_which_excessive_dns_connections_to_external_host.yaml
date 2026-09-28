@@ -1,0 +1,43 @@
+id: bucket-hosts-which-excessive-dns-connections-to-external-host
+name: Hosts which Excessive DNS Connections to External Host
+platform: logsign
+object_type: statistical_bucket
+
+author: SOC
+date: 2026-09-28
+modified: 2026-09-28
+
+status: draft
+
+definition:
+  description: Hosts which Excessive DNS Connections to External Host
+  type: statistical
+  group: null
+  severity: warning
+  context: suspicious
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  query: >
+    @@Connection @@DNSConnection Destination.Position:out
+
+  time_column: null
+  group_column: Source.IP
+  value_column: Source.IP
+  criteria: value_count
+
+  trigger:
+    operator: ">"
+    level: 300
+
+  check_events_in_last_seconds: 360
+  update_period_seconds: 60
+  purge_period_seconds: 360
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null
