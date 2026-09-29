@@ -18,12 +18,12 @@ definition:
   severity: warning
   
 
-
 data:
   query: >
     @@DeniedConnection
     AND Source.Position:in
     AND Destination.Position:in
+    AND NOT Service.Name:(Google-Gmail  OR Microsoft-Teams.Published.Worldwide.Allow  OR Microsoft-Azure.OneDsCollector  OR Microsoft-Office365.Published  OR Apple-AppStore  OR Anthropic-Claude)
 
   time_column: Time.Generated
 
