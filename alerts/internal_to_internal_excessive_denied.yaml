@@ -6,8 +6,8 @@ object_type: alert_rule
 
 
 author: SOC
-date: 2026-09-20
-modified: 2026-09-20
+date: 2026-09-28
+modified: 2026-09-28
 
 status: production
 
@@ -21,7 +21,7 @@ definition:
 
 depends_on:
   - bucket-internal-to-internal-excessive-denied
-  - bucket-known-legitimate-service-noise-excessive-outbound-deny
+  
 conditions:
   - field: Source.IP
     operator: BEHAVIOR
@@ -34,10 +34,7 @@ conditions:
   - field: Destination.Position
     operator: IS
     value: in
-  
-  - field: Service.Name
-    operator: NOT BEHAVIOR
-    value: Known Legitimate Service Noise - Excessive Outbound Deny
+
 
 suppression:
   duration_seconds: 360

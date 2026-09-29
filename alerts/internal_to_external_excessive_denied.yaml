@@ -6,8 +6,8 @@ object_type: alert_rule
 
 
 author: SOC
-date: 2026-09-28
-modified: 2026-09-28
+date: 2026-09-20
+modified: 2026-09-20
 
 status: production
 
@@ -21,8 +21,6 @@ definition:
 
 depends_on:
   - bucket-internal-to-internal-excessive-denied
-  - bucket-
-  
 conditions:
   - field: Source.IP
     operator: BEHAVIOR
@@ -35,7 +33,6 @@ conditions:
   - field: Destination.Position
     operator: IS
     value: in
-
 
 suppression:
   duration_seconds: 360
