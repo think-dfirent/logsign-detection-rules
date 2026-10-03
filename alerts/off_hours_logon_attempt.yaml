@@ -1,0 +1,74 @@
+id: alert-off-hours-logon-attempt
+
+name: Off-hours Logon Attempt
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-10-03
+modified: 2026-10-03
+
+status: production
+
+definition:
+  description: User Login Successful/Fail in off-hours
+  category: identity
+  severity: information
+  roles:
+    - CMC_Monitor_Role
+
+depends_on: []
+
+conditions:
+  - field: EventMap.ID
+    operator: VALUES
+    value:
+      - 10101
+      - 10102
+      - 50101
+      - 50103
+
+suppression:
+  duration_seconds: 600
+  columns:
+    - Source.UserName
+
+run: custom
+schedule:
+  - day: monday
+    start_time: "18:00"
+    end_time: "08:00"
+  - day: tuesday
+    start_time: "18:00"
+    end_time: "08:00"
+  - day: wednesday
+    start_time: "18:00"
+    end_time: "08:00"
+  - day: thursday
+    start_time: "18:00"
+    end_time: "08:00"
+  - day: friday
+    start_time: "18:00"
+    end_time: "08:00"
+  - day: saturday
+    start_time: "00:00"
+    end_time: "23:59"
+  - day: sunday
+    start_time: "00:00"
+    end_time: "23:59"
+
+action:
+  column: Source.UserName
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null
