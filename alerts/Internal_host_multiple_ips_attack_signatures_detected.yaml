@@ -1,0 +1,70 @@
+id: alert-internal-host-multiple-ips-attack-signatures-detected
+
+name: Internal Host Multiple IPS attack signatures detected
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-10-06
+modified: 2026-10-06
+
+status: production
+
+definition:
+  description: >
+    Alerts when an internal host is added to the
+    Internal Host Multiple IPS Attack Signatures statistical bucket
+    after generating more than the configured number of unique
+    FortiGate IPS signatures against internal destinations.
+  category: ips
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-internal-host-multiple-ips-attack-signatures
+conditions:
+  - field: DataType
+    operator: IS
+    value: bucket
+
+  - field: EventMap.SubType
+    operator: IS
+    value: Set
+
+  - field: Bucket.Name
+    operator: IS
+    value: Internal Host Multiple IPS Attack Signatures
+
+suppression:
+  duration_seconds: 3600
+  columns:
+    - Source.IP
+
+run: always
+
+action:
+  column: Source.IP
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+detection_hypothesis: >
+  An internal host generating multiple distinct IPS attack signatures
+  against internal systems may indicate vulnerability scanning,
+  exploit probing, or compromised-host lateral activity.
+
+false_positives:
+  - Authorized internal vulnerability scanners
+  - Security testing tools
+  - IPS false-positive signatures
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null
