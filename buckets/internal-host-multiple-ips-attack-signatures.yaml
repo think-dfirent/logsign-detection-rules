@@ -1,0 +1,47 @@
+id: bucket-internal-host-multiple-ips-attack-signatures
+name: Internal Host Multiple IPS Attack Signatures
+platform: logsign
+object_type: statistical_bucket
+
+author: SOC
+date: 2026-10-06
+modified: 2026-10-06
+
+status: tuning
+
+definition:
+  description: >
+    Identifies internal hosts generating multiple unique FortiGate IPS
+    attack signatures against internal destinations within a one-hour time window.
+  type: statistical
+  group: behavior
+  severity: warning
+  context: suspicious
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  query: >
+    Event.SubCategory:ips
+    AND Source.Position:in
+    AND Destination.Position:in
+
+  time_column: Time.Generated
+  group_column: Source.IP
+  value_column: Attack.ID
+  criteria: unique_count
+
+  trigger:
+    operator: ">"
+    level: 5
+
+  check_events_in_last_seconds: 3600
+  update_period_seconds: 60
+  purge_period_seconds: 3600
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null
