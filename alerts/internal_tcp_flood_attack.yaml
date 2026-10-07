@@ -36,15 +36,14 @@ suppression:
 
 run: always
 
-# Action and notification settings are not visible in the supplied screenshots.
+action:
+  column: Source.IP
 
+managed_security: ticket
 owner: SOC
 
 validation:
   status: pending
   last_validated: null
-  notes: >
-    Transcribed from the supplied Internal TCP Flood Attack alert screenshots.
-    Action and notification settings, including managed security, are not shown
-    and must be confirmed before production use. Runtime behavior has not been
-    validated in Logsign.
+  notes: null
+    

@@ -19,8 +19,6 @@ definition:
 
 depends_on: []
 
-# The supplied screenshots show an empty Rule Set.
-# Populate and validate the login-success conditions before production use.
 conditions: []
 
 suppression:
