@@ -1,18 +1,18 @@
-id: bucket-internal-to-internal-excessive-denied
-name: Internal-to-Internal Excessive Denied Connection
+id: bucket-internal-to-external-excessive-denied
+name: Internal-to-External Excessive Denied Connection
 platform: logsign
 object_type: statistical_bucket
 
 author: SOC
 date: 2026-09-20
-modified: 2026-09-20
+modified: 2026-10-08
 
 status: production
 
 definition:
   description: >
     Identifies internal source IP addresses generating an excessive
-    number of denied connections toward internal destinations.
+    number of denied connections toward external destinations.
   type: statistical
   group: behavior
   severity: warning
@@ -22,8 +22,8 @@ data:
   query: >
     @@DeniedConnection
     AND Source.Position:in
-    AND Destination.Position:in
-    AND NOT Service.Name:(Google-Gmail  OR Microsoft-Teams.Published.Worldwide.Allow  OR Microsoft-Azure.OneDsCollector  OR Microsoft-Office365.Published  OR Apple-AppStore  OR Anthropic-Claude)
+    AND Destination.Position:out
+    AND NOT Service.KnownLegit: "true"
 
   time_column: Time.Generated
 
@@ -33,7 +33,7 @@ data:
 
   trigger:
     operator: ">"
-    level: 50
+    level: 1000
 
   check_events_in_last_seconds: 360
   update_period_seconds: 60

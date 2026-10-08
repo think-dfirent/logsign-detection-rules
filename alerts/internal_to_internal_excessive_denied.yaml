@@ -7,15 +7,14 @@ object_type: alert_rule
 
 author: SOC
 date: 2026-09-28
-modified: 2026-09-28
+modified: 2026-10-08
 
 status: production
 
 definition:
   description: >
     Alerts when an internal source that has entered the excessive
-    denied-connection bucket continues generating denied
-    internal-to-internal connection events.
+    denied-connection bucket.
   category: traffic
   severity: warning
 
@@ -23,17 +22,17 @@ depends_on:
   - bucket-internal-to-internal-excessive-denied
   
 conditions:
-  - field: Source.IP
-    operator: BEHAVIOR
+  - field: Bucket.Name
+    operator: IS
     value: Internal-to-Internal Excessive Denied Connection
 
-  - field: Source.Position
+  - field: EventMap.SubType
     operator: IS
-    value: in
+    value: Set
 
-  - field: Destination.Position
+  - field: DataType
     operator: IS
-    value: in
+    value: bucket
 
 
 suppression:
