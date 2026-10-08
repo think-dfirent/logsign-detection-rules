@@ -1,13 +1,13 @@
-id: alert-internal-to-internal-excessive-denied
+id: alert-internal-to-external-excessive-denied
 
-name: Internal-to-Internal Excessive Denied Connection
+name: Internal-to-External Excessive Denied Connection
 platform: logsign
 object_type: alert_rule
 
 
 author: SOC
 date: 2026-09-20
-modified: 2026-09-20
+modified: 2026-10-08
 
 status: production
 
@@ -15,16 +15,16 @@ definition:
   description: >
     Alerts when an internal source that has entered the excessive
     denied-connection bucket continues generating denied
-    internal-to-internal connection events.
+    internal-to-external connection events.
   category: traffic
   severity: warning
 
 depends_on:
-  - bucket-internal-to-internal-excessive-denied
+  - bucket-internal-to-external-excessive-denied
 conditions:
   - field: Source.IP
     operator: BEHAVIOR
-    value: Internal-to-Internal Excessive Denied Connection
+    value: Internal-to-External Excessive Denied Connection
 
   - field: Source.Position
     operator: IS
@@ -32,7 +32,7 @@ conditions:
 
   - field: Destination.Position
     operator: IS
-    value: in
+    value: out
 
 suppression:
   duration_seconds: 360
@@ -43,6 +43,10 @@ action:
   column: Source.IP
 
 managed_security: ticket
+
+detection_hypothesis: null
+false_positives:
+  - Known legitimate service noise
 
 owner: SOC
 

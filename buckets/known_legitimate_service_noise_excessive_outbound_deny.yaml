@@ -5,7 +5,7 @@ object_type: static_bucket
 
 author: SOC
 date: 2026-09-28
-modified: 2026-09-28
+modified: 2026-10-08
 
 status: production
 
@@ -21,22 +21,29 @@ definition:
 
 data:
   match_type: static_key
-  key: Service.Name
-
-  values:
+  key:
     - Google-Gmail
     - Microsoft-Teams.Published.Worldwide.Allow
     - Microsoft-Azure.OneDsCollector
-    - MicrosoftOffice365.Published
+    - Microsoft-Office365.Published
     - Apple-AppStore
     - Anthropic-Claude
+
+  values:
+    - true
 usage:
   detection:
     - Internal-to-External Excessive Denied Connection
 
-  condition: >
-    Service.Name NOT BEHAVIOR
-    "Known Legitimate Service Noise - Excessive Outbound Deny"
+modifier:
+  key_field:
+    - Service.Name
+  modify_field:
+    - Service.KnownLegit
+  value:
+    - $value
+  buckets: null
+
 
   purpose: >
     Reduce recurring benign application noise before denied outbound
