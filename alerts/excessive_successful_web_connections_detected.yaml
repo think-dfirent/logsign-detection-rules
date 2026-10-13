@@ -1,0 +1,57 @@
+id: alert-excessive-successful-web-connections-detected
+
+name: Excessive Successful Web Connections Detected
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-10-13
+modified: 2026-10-13
+
+status: enable
+
+definition:
+  description: Excessive Successful Web Connections from one source.IP toward critical system
+  category: traffic
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-host-which-excessive-web-successes
+conditions:
+  - field: DataType
+    operator: IS
+    value: bucket
+
+  - field: EventMap.SubType
+    operator: IS
+    value: Set
+
+  - field: Bucket.Name
+    operator: IS
+    value: Hosts which Excessive Web Successes
+
+suppression:
+  duration_seconds: 360
+  columns:
+    - Action.Object
+
+
+run: always
+
+action:
+  column: Action.Object
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

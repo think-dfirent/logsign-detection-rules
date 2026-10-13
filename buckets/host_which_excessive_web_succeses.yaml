@@ -1,0 +1,42 @@
+id: bucket-host-which-excessive-web-successes
+name: Hosts which Excessive Web Successes
+platform: logsign
+object_type: statistical_bucket
+
+author: SOC
+date: 2026-10-13
+modified: 2026-10-13
+
+status: draft
+
+definition:
+  description: 
+  type: statistical
+  group: null
+  severity: warning
+  context: suspicious
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  query: >
+    URL.ResultCode:[200 TO 299] AND NOT URL.Path:("/static/js/" OR "/static/css/" OR "/static/media/" OR "/_next/static/" OR "/favicon.ico" OR "/manifest.json" OR "/robots.txt" OR "/vnpt-plugin.js" OR "/vntic-sign/tokensigning.js" OR "/deviceInfo-library/getDeviceInfo.js") AND @@WebServerEvents
+  time_column: null
+  group_column: Source.IP
+  value_column: Source.IP
+  criteria: value_count
+
+  trigger:
+    operator: ">"
+    level: 360
+
+  check_events_in_last_seconds: 180
+  update_period_seconds: 60
+  purge_period_seconds: 360
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null
