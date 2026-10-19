@@ -1,0 +1,71 @@
+id: bucket-sensitive-web-paths-backup-ext
+name: Sensitive Web Paths - Backup Extensions
+platform: logsign
+object_type: static_bucket
+
+author: SOC
+date: 2026-10-16
+modified: 2026-10-16
+
+status: draft
+
+definition:
+  description: >
+    File extensions that indicate database dumps, archives, or editor
+    backup files left in the web root. Stack-agnostic. A successful (2xx)
+    response means a downloadable backup/dump was served. Referenced by
+    the Sensitive Web Path Returned Success detection.
+  type: static
+  group: behavior
+  severity: major
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  match_type: ends_with
+  key:
+    - .sql
+    - .sql.gz
+    - .sql.zip
+    - .bak
+    - .old
+    - .tar.gz
+    - .tgz
+    - .zip
+    - .rar
+    - .7z
+    - .swp
+    - .save
+
+  values:
+    - true
+
+usage:
+  detection:
+    - Sensitive Web Path Returned Success
+
+modifier:
+  key_field:
+    - URL.Path
+  modify_field:
+    - URL.SensitivePathHit
+  value:
+    - $value
+  buckets: null
+
+  purpose: >
+    Stamp requests for backup/dump file extensions so the alert can fire
+    when the response code indicates the file was actually downloadable.
+
+tuning_notes:
+  - match_type is ends_with, NOT contains_any - otherwise /docs/backup.sql-guide/page matches. Confirm Logsign supports ends_with for a static bucket; if not, use a regex match anchored at end-of-string.
+  - .zip / .tar.gz are legitimate on download/release portals - scope out those destinations per tenant rather than removing the extension.
+  - Pair with response size: a 200 returning a few KB is likely a soft-404 page, not a real dump.
+  - Stack-agnostic; keep unified.
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

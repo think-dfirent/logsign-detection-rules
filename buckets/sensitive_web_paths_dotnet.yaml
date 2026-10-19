@@ -1,0 +1,65 @@
+id: bucket-sensitive-web-paths-dotnet
+name: Sensitive Web Paths - DotNet
+platform: logsign
+object_type: static_bucket
+
+author: SOC
+date: 2026-10-16
+modified: 2026-10-16
+
+status: draft
+
+definition:
+  description: >
+    URL path patterns that expose ASP.NET / IIS debug and error handlers.
+    A successful (2xx) response indicates real exposure (stack traces,
+    request logs, or source/config disclosure). Only reference this bucket
+    in a tenant's alert if that tenant runs a .NET/IIS stack. Referenced
+    by the Sensitive Web Path Returned Success detection.
+  type: static
+  group: behavior
+  severity: major
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  match_type: contains_any
+  key:
+    - /trace.axd
+    - /elmah.axd
+    - /glimpse.axd
+    - /webresource.axd
+    - /_vti_bin
+    - /sitefinity/authenticate
+
+  values:
+    - true
+
+usage:
+  detection:
+    - Sensitive Web Path Returned Success
+
+modifier:
+  key_field:
+    - URL.Path
+  modify_field:
+    - URL.SensitivePathHit
+  value:
+    - dotnet
+  buckets: null
+
+  purpose: >
+    Stamp requests whose path matches a known .NET/IIS sensitive pattern
+    so the alert can fire when the response code also indicates success.
+
+tuning_notes:
+  - web.config is intentionally NOT duplicated here; it lives in the stack-agnostic Secrets bucket.
+  - /trace.axd and /elmah.axd expose recent requests including auth tokens and session data when enabled; a 2xx hit is a genuine finding.
+  - Only reference this bucket for tenants actually running .NET/IIS. Do not attach it to non-.NET tenants.
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

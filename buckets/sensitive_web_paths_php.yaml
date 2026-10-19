@@ -1,0 +1,70 @@
+id: bucket-sensitive-web-paths-php
+name: Sensitive Web Paths - PHP
+platform: logsign
+object_type: static_bucket
+
+author: SOC
+date: 2026-10-16
+modified: 2026-10-16
+
+status: draft
+
+definition:
+  description: >
+    URL path patterns that expose PHP-stack admin panels, database
+    management tools, or debug/info endpoints. A successful (2xx)
+    response to any of these indicates a real exposure, not just a probe.
+    Referenced by the Sensitive Web Path Returned Success detection.
+  type: static
+  group: behavior
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+data:
+  match_type: contains_any
+  key:
+    - phpmyadmin
+    - adminer
+    - mysqldumper
+    - phpinfo
+    - /info.php
+    - /_profiler
+    - /telescope
+    - php.ini
+    - wp-config.php.
+    - wp-config.php~
+    - wp-config.php.bak
+
+  values:
+    - true
+
+usage:
+  detection:
+    - Sensitive Web Path Returned Success
+
+modifier:
+  key_field:
+    - URL.Path
+  modify_field:
+    - URL.SensitivePathHit
+  value:
+    - $value
+  buckets: null
+
+  purpose: >
+    Stamp requests whose path matches a known PHP-stack sensitive pattern
+    so the alert can fire only when the response code also indicates success.
+
+tuning_notes:
+  - Keep this list to paths whose SUCCESSFUL retrieval is a real finding; do not paste a full fuzzing wordlist.
+  - Verify whether contains_any matching is case-sensitive and whether it runs on a decoded URL.Path before trusting it (test /PHPINFO.php and /%70hpinfo.php).
+  - wp-config.php. / ~ / .bak catch backup copies that return source; the live wp-config.php normally returns an empty 200 and is handled by response-size review, not this list.
+  - Only tenants running a PHP stack need this bucket referenced in their alert.
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: null

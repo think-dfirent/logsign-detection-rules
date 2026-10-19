@@ -1,0 +1,93 @@
+id: alert-web-success-after-excessive-client-errors
+
+name: Web Success After Excessive Client Errors
+platform: logsign
+object_type: alert_rule
+
+author: SOC
+date: 2026-10-19
+modified: 2026-10-19
+
+status: draft
+
+definition:
+  description: >
+    Fires when a source IP that is currently in the "Hosts which Excessive
+    Web Client Errors" bucket (a 4xx fuzzing/discovery burst) then receives
+    a successful HTTP 2xx response.
+  category: Web
+  severity: warning
+  roles:
+    - CMC_Monitor_Role
+
+depends_on:
+  - bucket-host-which-excessive-web-client-errors
+
+conditions:
+  # Only inbound traffic to our monitored web assets.
+  - field: Source.Position
+    operator: IS
+    value: out
+
+  - field: URL.ResultCode
+    operator: IN
+    value:
+      - 200
+      - 206
+
+  - field: Source.IP
+    operator: BEHAVIOR
+    value: Hosts which Excessive Web Client Errors
+
+suppression:
+  duration_seconds: 3600
+  columns:
+    - Source.IP
+    - Destination.IP
+
+run: always
+
+action:
+  column: Source.IP
+  rules:
+    - CMC Telecom Alert
+  overwrite_info: false
+
+soar_connector: Alert Engine
+managed_security: ticket
+
+detection_hypothesis: >
+  A host that produced a 4xx burst (web fuzzing) and then received a 2xx
+  likely discovered a valid, previously-guessed resource. The 4xx burst is
+  evidence of scanning; the 2xx is evidence content was served; "discovered
+  something useful" remains a hypothesis to confirm in triage.
+
+false_positives:
+  - Broken SPA / client requesting many missing assets (404) then loading valid pages (200).
+  - Authorized vulnerability scanners - exclude by Source.IP, never by User-Agent.
+  - Soft-404 apps returning 200 for non-existent paths - the 2xx may be meaningless; check response size.
+  - A 2xx that is just a static asset (favicon/CSS) caught mid-scan, not a real "find".
+
+evasion_notes:
+  - Bucket updates every 60s; a very fast scanner can get its 2xx before the IP is added, so the first hit may be missed. Subsequent 2xx from the same ongoing scan still fire.
+  - An attacker who already knows the path makes no 4xx burst and never enters the bucket - that case is covered by the signature-based Sensitive Web Path Returned Success alert
+
+attack:
+  tactic: TA0043
+  technique: T1595.003
+  justification: >
+    4xx burst then 2xx is active wordlist scanning that succeeded. Still
+    reconnaissance; do NOT map T1190 on the 2xx alone. Escalate only on
+    follow-up evidence (POST to the discovered endpoint, auth attempts).
+  note: Verify technique IDs against the current ATT&CK version.
+
+owner: SOC
+
+validation:
+  status: pending
+  last_validated: null
+  notes: >
+    Blocked on confirming: (1) URL.ResultCode field name/type (numeric vs
+    string), (2) that BEHAVIOR resolves Source.IP against this statistical
+    bucket's membership at 2xx event time, (3) tenant scope (one rule across
+    tenants via Destination.Domain, or per-tenant instance).
